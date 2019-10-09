@@ -87,7 +87,7 @@ app.get("/profile/:id/", (req, res) => {
 	find_user_id(id, res, "");
 })
 
-app.post("/image", (req, res) => {
+app.put("/image", (req, res) => {
 	const {id} = req.body;
 	find_user_id(id, res, "entries");
 });
