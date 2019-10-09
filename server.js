@@ -1,8 +1,11 @@
 const express = require('express');
 const body_parser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
+
 app.use(body_parser.json());
+app.use(cors());
 
 const database = {
 	users: [
@@ -56,7 +59,7 @@ app.get('/', (req,res)=>{
 app.post('/signin', (req, res) => {
 	if (req.body.email === database.users[0].email &&
 		req.body.password === database.users[0].password){
-		res.json('success');
+		res.json(database.users[0]);
 	} else{
 		res.status(400).json('error logging in');
 	}
@@ -73,7 +76,9 @@ app.post('/register', (req, res) => {
 		joined: new Date()
 	});
 
-	res.json(database.users[database.users.length - 1]);
+	let return_obj = Object.assign({}, database.users[database.users.length - 1]);  
+	delete return_obj.password;
+	res.json(return_obj);
 
 });
 
@@ -88,5 +93,5 @@ app.post("/image", (req, res) => {
 });
 
 app.listen(3000, () => {
-	console.log('Running...');
+	console.log('Running on port 3000...');
 })
