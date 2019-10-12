@@ -1,11 +1,27 @@
 const express = require('express');
 const body_parser = require('body-parser');
 const cors = require('cors');
+const knex = require('knex');
 
 const app = express();
 
 app.use(body_parser.json());
 app.use(cors());
+
+
+const db = knex({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    user : 'postgres',
+    password : 'test',
+    database : 'smartbrain'
+  }
+});
+
+// DEBUG
+console.log('DEBUG');			
+db.select('*').from('users').then(data => console.log(data));
 
 const database = {
 	users: [
@@ -67,19 +83,17 @@ app.post('/signin', (req, res) => {
 
 app.post('/register', (req, res) => {
 	const {name, email, password} = req.body;
-	database.users.push({
-		id: '333',
-		name: name,
-		email: email,
-		password: password,
-		entries: 0,
-		joined: new Date()
-	});
-
-	let return_obj = Object.assign({}, database.users[database.users.length - 1]);  
-	delete return_obj.password;
-	res.json(return_obj);
-
+	db('users')
+		.returning('*')
+		.insert({
+			name: name,
+			email: email,
+			joined: new Date()
+		})
+		.then(user => {
+			res.json(user[0]);
+		})
+		.catch(err => res.status(400).json('unable to register'));
 });
 
 app.get("/profile/:id/", (req, res) => {
