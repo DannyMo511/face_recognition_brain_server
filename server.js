@@ -27,11 +27,6 @@ const db = knex({
 
 const salt_rounds = 10;
 
-
-app.get('/', (req,res)=>{
-	res.json(database.users);
-});
-
 app.post('/signin', (req, res) => {signin.handleSignin(req, res, db, bcrypt)});
 app.post('/register', (req, res) => {register.handleRegister(req, res, db, bcrypt, salt_rounds)});
 app.get("/profile/:id/", (req, res) => {profile.handleProfile(req, res, db)});
